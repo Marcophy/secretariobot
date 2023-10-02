@@ -1,0 +1,11 @@
+Secretario bot
+Marco A. Villena, PhD.
+2023
+
+KEYWORD list
+-------------
+
+help -> Return the help email, that is, this text.
+myip -> Return the public IP if this machine.
+looptime=XX -> Update the checking time of the email. XX means the refresh time in minutes. It must me an integer > 1.
+melon -> Return an internal joke.
