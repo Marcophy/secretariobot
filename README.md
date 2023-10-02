@@ -1,5 +1,5 @@
 # SECRETARIOBOT
-*Author: **Marco A. Villena**&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Email: [mavillenas@proton.me](mailto:mavillenas@proton.me)*
+*Author: **Marco A. Villena***
 
 
 This tool uses a **GMAIL** account to communicate with a remote machine. The general idea is that the script periodically check the inbox of an specific gmail account. The subject of the emails are considered as commands for this script.
@@ -28,7 +28,7 @@ There're several keywords avaiable designed for testing only.
 
 | Subject keyword | Function                                                                                                                    |
 |:----------------|:----------------------------------------------------------------------------------------------------------------------------|
-| myip            | Return the public IP iof the machine.                                                                                       |
+| myip            | Return the public IP of the machine.                                                                                        |
 | looptime=       | Update the email checking time. Add an **integer number (>1)** after the equal. This munber is the refresh time in minutes. |
 | melon           | Return an internal joke.                                                                                                    |
 | help            | Send by email the link to this manual.                                                                                      |
