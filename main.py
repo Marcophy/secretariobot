@@ -30,13 +30,14 @@ import json
 # ****** Functions ******
 def check_email(in_email_address, in_password, in_folder='inbox'):
     """
+    Download and return the 'unseen' emails for the designed GMAIL account.
 
     Args:
-        in_email_address (str):
-        in_password (str):
-        in_folder (str):
+        in_email_address (str): Gmail address
+        in_password (str): Password of gmail email
+        in_folder (str): Email folder where the function search the unseen emails. 'inbox' by default.
 
-    Returns:
+    Returns: Return a list with all unseen email found.
 
     """
 
@@ -58,8 +59,6 @@ def check_email(in_email_address, in_password, in_folder='inbox'):
                 status, data = connection.fetch(email_id, "(RFC822)")
                 email_string = email.message_from_bytes(data[0][1])
 
-                aux = re.findall(pattern, email_string['From'])
-
                 no_read_emails.append({
                     'subject': email_string['Subject'],
                     'sender': re.findall(pattern, email_string['From'])[0],
@@ -72,21 +71,22 @@ def check_email(in_email_address, in_password, in_folder='inbox'):
             connection.logout()
             return True, 'NONE'
 
-    except Exception as err:
-        return False, str(err)
+    except Exception as ferr:
+        return False, str(ferr)
 
 
 def send_email(in_password, in_from, in_to, in_subject, in_body):
     """
+    Send an email from the master email address to the desired email account.
 
     Args:
-        in_password (str):
-        in_from (str):
-        in_to (str):
-        in_subject (str):
-        in_body (str):
+        in_password (str): Password of the master gmail account.
+        in_from (str): Email address of the master gmail account.
+        in_to (str): Email address of the receiver.
+        in_subject (str): Subject of the email
+        in_body (str): Body of the email.
 
-    Returns:
+    Returns: Return True if the email was sent successfully. False if there is an error.
 
     """
 
@@ -99,10 +99,10 @@ def send_email(in_password, in_from, in_to, in_subject, in_body):
     # Initialize the email
     context = ssl.create_default_context()
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-            smtp.login(in_from, in_password)
-            smtp.sendmail(in_from, in_to, em.as_string())
-            smtp.quit()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp_server:
+            smtp_server.login(in_from, in_password)
+            smtp_server.sendmail(in_from, in_to, em.as_string())
+            smtp_server.quit()
             return True
 
     except Exception as ferr:
@@ -112,33 +112,36 @@ def send_email(in_password, in_from, in_to, in_subject, in_body):
 
 def get_public_ip():
     """
+    Gets the public IP if the machine by two methos:
+        - Using the website https://api64.ipify.org?format=json
+        - Using the socket librarie
 
-    Returns:
+    Returns: Return a list with the resutl obtained by both methods.
 
     """
 
     try:
         response = requests.get('https://api64.ipify.org?format=json').json()
         from_web = response['ip']
-    except requests.exceptions.RequestException as err:
-        from_web = str(err)
+    except requests.exceptions.RequestException as ferr:
+        from_web = str(ferr)
 
     try:
         from_local = socket.gethostbyname(socket.gethostname())
-    except socket.gaierror as err:
-        from_local = str(err)
+    except socket.gaierror as ferr:
+        from_local = str(ferr)
 
     return [from_web, from_local]
 
 
 def read_withelist(in_path):
     """
+    Read the whitelist.txt file.
 
     Args:
-        in_path (str):
+        in_path (str): Path of the whitelist.txt file
 
-    Returns:
-
+    Returns: Return a list with all emails addresses read for the whitelist.txt file
     """
 
     file_list = []
@@ -158,13 +161,14 @@ def read_withelist(in_path):
 
 def check_whitelist(in_lock, in_email, in_whitelist):
     """
+    Check if an email address is in the white-list.
 
     Args:
-        in_lock (bool):
-        in_email (str):
-        in_whitelist (list):
+        in_lock (bool): Status of the whitelist variable in the setup.
+        in_email (str): Email for checking.
+        in_whitelist (list): White list.
 
-    Returns:
+    Returns: Return True if the email is in the white-list or if the in_lock variable is False. False in other case.
 
     """
     if in_lock:
@@ -176,41 +180,14 @@ def check_whitelist(in_lock, in_email, in_whitelist):
         return True
 
 
-def read_help_template(in_path):
-    """
-
-    Args:
-        in_path (str):
-
-    Returns:
-
-    """
-
-    try:
-        with open(in_path, 'r') as file:
-            all_lines = file.readlines()
-
-        all_lines = ''.join(all_lines)
-
-        return True, all_lines
-    except FileNotFoundError:
-        print('ERROR: Help file not found!')
-        all_lines = 'none'
-        return False, all_lines
-    except Exception as ferr:
-        print('ERROR: ' + str(ferr))
-        all_lines = 'none'
-        return False, all_lines
-
-
 def load_config(in_path):
     """
+    Load the setup of the script from config file in JSON format.
 
     Args:
-        in_path (str):
+        in_path (str): Path of the configuration file
 
-    Returns:
-
+    Returns: Return a dict with all setup variables.
     """
 
     try:
@@ -272,6 +249,7 @@ if exec_control:
                             # Return the public IP
                             if item['subject'] == 'myip':
                                 body = str(get_public_ip())
+                                body = body + '\n\nMessage generated by SecretarioBot.'
                                 if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
                                     actions_log.append('<myip> sent to ' + item['sender'])
                                 else:
@@ -279,7 +257,7 @@ if exec_control:
                             # ------ MELON case
                             # Return a Joke
                             elif item['subject'] == 'melon' or item['subject'] == 'melón':
-                                body = 'Mas melón eres tu.\nMas melon eres tu.'
+                                body = 'Mas melón eres tu.\n\nMessage generated by SecretarioBot.'
                                 if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
                                     actions_log.append('<melon> sent to ' + item['sender'])
                                 else:
@@ -292,7 +270,7 @@ if exec_control:
                                 if aux[1].isdigit() and int(aux[1]) > 1:
                                     setup['loop_time'] = int(aux[1])
                                     loop_time = 60 * setup['loop_time']
-                                    body = 'Loop-time updated to ' + str(loop_time) + ' seconds.'
+                                    body = 'Loop-time updated to ' + str(loop_time) + ' seconds.\n\nMessage generated by SecretarioBot.'
                                     if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
                                         actions_log.append('Loop-time updated to ' + str(setup['loop_time']) + ' minutes. <looptime> sent to ' + item['sender'])
                                     else:
@@ -306,17 +284,16 @@ if exec_control:
                             # ------ HELP case
                             # Send the help information
                             elif 'help' in item['subject']:
-                                err_help, help_body = read_help_template('help.txt')
-                                if err_help:
-                                    if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], help_body):
-                                        actions_log.append('<Help> sent to ' + item['sender'])
-                                    else:
-                                        actions_log.append('ERROR sending <help> result to ' + item['sender'])
+                                body = 'Visit http://www.xxxx for more information.\n\nMessage generated by SecretarioBot.'
+                                if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
+                                    actions_log.append('<Help> sent to ' + item['sender'])
+                                else:
+                                    actions_log.append('ERROR sending <help> result to ' + item['sender'])
 
                             # ------ UNIDENTIFIED SUBJECT case
                             else:
                                 if setup['report_unidentified']:
-                                    body = 'The subject ' + item['subject'] + ' could not be identified.\nSend <help> for more information.'
+                                    body = 'The subject ' + item['subject'] + ' could not be identified.\nSend <help> for more information.\n\nMessage generated by SecretarioBot.'
                                     if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
                                         actions_log.append('Unidentified subject sent to ' + item['sender'])
                                     else:
@@ -325,7 +302,7 @@ if exec_control:
                                     actions_log.append('Unidentified subject sent from ' + item['sender'] + '. NO REPORTED.')
                         else:
                             if setup['report_unidentified']:
-                                body = 'Sorry, you do not have access to this system.'
+                                body = 'Sorry, you do not have access to this system.\n\nMessage generated by SecretarioBot.'
                                 if send_email(password, email_address, item['sender'], 'RE: ' + item['subject'], body):
                                     actions_log.append('WARNING: ' + item['sender'] + ' is not in white-list. This issue was reported to the sender.')
                                 else:
