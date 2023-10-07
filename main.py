@@ -134,7 +134,7 @@ def get_public_ip():
     return [from_web, from_local]
 
 
-def read_withelist(in_path):
+def read_whitelist(in_path):
     """
     Read the whitelist.txt file.
 
@@ -226,7 +226,7 @@ loop_time = 60 * setup['loop_time']
 
 # Load the white list
 if setup['whitelist']:
-    err_control, white_list = read_withelist('whitelist.txt')
+    err_control, white_list = read_whitelist('whitelist.txt')
     if not err_control:
         exec_control = False
 else:
