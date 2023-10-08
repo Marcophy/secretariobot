@@ -112,11 +112,11 @@ def send_email(in_password, in_from, in_to, in_subject, in_body):
 
 def get_public_ip():
     """
-    Gets the public IP if the machine by two methos:
+    Gets the public IP if the machine by two methods:
         - Using the website https://api64.ipify.org?format=json
-        - Using the socket librarie
+        - Using the socket libraries
 
-    Returns: Return a list with the resutl obtained by both methods.
+    Returns: Return a list with the result obtained by both methods.
 
     """
 
@@ -219,7 +219,7 @@ load_dotenv()
 email_address = os.getenv("EMAIL")
 password = os.getenv("PASSWORD")
 if email_address is None or password is None:
-    print('ERROR: Impossible load the enviroment variable.')
+    print('ERROR: Impossible load the environment variable.')
     exec_control = False
 
 loop_time = 60 * setup['loop_time']
